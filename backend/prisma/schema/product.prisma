@@ -1,0 +1,21 @@
+model Product {
+    id           String      @id @default(uuid())
+    name         String
+    description  String
+    category     String
+    ws_code      Int // how many item/strip
+    package_size Int // how many strip/package
+    images       String[]
+    tags         String[]
+    sales_price  Float // Price of the product
+    mrp          Float // Maximum Retail Price
+    stockQty     Int // Available stock quantity
+    created_at   DateTime @default(now())
+    updated_at   DateTime @updatedAt
+
+    // Relationships
+    user     User       @relation(fields: [user_id], references: [id])
+    user_id  String
+    cartItem CartItem[]
+    orderItem OrderItem[]
+}

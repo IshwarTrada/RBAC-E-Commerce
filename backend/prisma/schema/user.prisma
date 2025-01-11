@@ -1,0 +1,27 @@
+enum Role {
+    USER
+    ADMIN
+}
+
+model User {
+    id         String    @id @default(uuid())
+    first_name String
+    last_name  String
+    email      String    @unique
+    password   String
+    role       Role      @default(USER)
+    created_at DateTime  @default(now())
+    last_login DateTime?
+
+    // Email Verification Fields
+    otp         Int? // OTP sent for email verification
+    otp_expiry  DateTime? // OTP expiry time
+    is_verified Boolean   @default(false) // To track email verification status
+
+    // Relationships
+    phone_numbers PhoneNumber[]
+    products      Product[]
+    address       Address[]
+    cart          Cart?
+    orders        Order[]
+}
