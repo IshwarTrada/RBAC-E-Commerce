@@ -5,8 +5,8 @@ enum Role {
 
 model User {
     id         String    @id @default(uuid())
-    first_name String
-    last_name  String
+    fname      String
+    lname      String
     email      String    @unique
     password   String
     role       Role      @default(USER)
@@ -14,9 +14,13 @@ model User {
     last_login DateTime?
 
     // Email Verification Fields
-    otp         Int? // OTP sent for email verification
+    otp         String? // OTP sent for email verification
     otp_expiry  DateTime? // OTP expiry time
     is_verified Boolean   @default(false) // To track email verification status
+
+    // Password Reset Fields
+    reset_token  String? // Token sent for password reset
+    reset_expiry DateTime? // Token expiry time
 
     // Relationships
     phone_numbers PhoneNumber[]
