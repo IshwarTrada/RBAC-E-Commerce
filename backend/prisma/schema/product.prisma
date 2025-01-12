@@ -1,5 +1,5 @@
 model Product {
-    id           String      @id @default(uuid())
+    id           String   @id @default(uuid())
     name         String
     description  String
     category     String
@@ -14,8 +14,10 @@ model Product {
     updated_at   DateTime @updatedAt
 
     // Relationships
-    user     User       @relation(fields: [user_id], references: [id])
-    user_id  String
-    cartItem CartItem[]
+    user      User        @relation(fields: [user_id], references: [id])
+    user_id   String
+    cartItem  CartItem[]
     orderItem OrderItem[]
+
+    @@index([name, ws_code]) // Indexing for search
 }
