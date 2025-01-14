@@ -308,6 +308,28 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const getUserById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (req.user.role !== "ADMIN" && id !== req.user.id) {
+      return res.status(400).json({
+        success: false,
+        message: "You are not authorized to access the data.",
+      });
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: id } });
+
+    return res.status(200).json({
+      success: true,
+      message: "UserId data fetched successfully.",
+      data: user,
+    });
+  } catch (error) {
+    console.error("Error at data fetching by useId ", error);
+  }
+};
+
 export {
   createUser,
   verifyOTP,
@@ -315,4 +337,5 @@ export {
   logout,
   forgotPassword,
   resetPassword,
+  getUserById
 };

@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs"; // file system
 import connectCloudinary from "../config/cloudinary.config.js";
+import { console } from "inspector";
 
 // Configuration
 connectCloudinary();
@@ -8,7 +9,7 @@ connectCloudinary();
 const uploadOnCloudinary = async (localFilePath) => {
   try {
     if (!localFilePath) return null;
-    // upload file on cloudinary
+    // upload file on cloudinary    
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "image",
       allowed_formats: ["png", "jpeg", "webp"],
@@ -16,6 +17,7 @@ const uploadOnCloudinary = async (localFilePath) => {
     fs.unlinkSync(localFilePath); // remove locally saved temporary file
     return response;
   } catch (error) {
+    console.error("Cloudi: " , error)
     fs.unlinkSync(localFilePath); // remove locally saved temporary file as the upload operation failed
   }
 };

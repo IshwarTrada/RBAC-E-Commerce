@@ -18,9 +18,6 @@ const verifyJwt = async (req, res, next) => {
     try {
       // Step 3 - Verify the token
       token_decoded = jwt.verify(token, process.env.JWT_SECRET);
-      console.log("TOKEN DECODED", token_decoded.id);
-      console.log("TOKEN DECODED", token_decoded.role);
-      console.log("TOKEN DECODED", token_decoded);
     } catch (error) {
       return res.status(401).json({
         success: false,
@@ -48,7 +45,6 @@ const verifyJwt = async (req, res, next) => {
     }
 
     req.user = user;
-
     next();
   } catch (error) {
     console.error("Error during token verification", error);
@@ -59,4 +55,22 @@ const verifyJwt = async (req, res, next) => {
   }
 };
 
-export default verifyJwt;
+const isAdmin = async (req, res, next) => {
+  try {
+    if (req.user.role !== "ADMIN") {
+      return res.status(400).json({
+        success: false,
+        message: "You are not authorized to access the data.",
+      });
+    }
+
+    next();
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(400)
+      .json({ success: false, message: `Error at server side : ${error}` });
+  }
+};
+
+export { verifyJwt, isAdmin };
