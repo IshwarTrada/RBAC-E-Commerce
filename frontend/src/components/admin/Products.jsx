@@ -360,7 +360,7 @@ const Products = () => {
                         >
                           View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem>Update Stock</DropdownMenuItem>
+                        {/* <DropdownMenuItem>Update Stock</DropdownMenuItem> */}
                         <DropdownMenuItem
                           className="text-red-600"
                           onClick={() => handleDeleteProduct(product.ws_code)}
