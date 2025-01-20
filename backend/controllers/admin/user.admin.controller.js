@@ -95,6 +95,13 @@ const deleteUser = async (req, res) => {
     // Get the userId from the route parameter
     const { userId } = req.params;
 
+    // Check if the user is trying to update their own role
+    if (userId === req.user.id) {
+      return res
+        .status(400)
+        .json({ success: false, message: "You cannot delete yourself." });
+    }
+
     // Verify if the userId exists in the database
     const user = await prisma.user.findUnique({
       where: {
@@ -108,6 +115,12 @@ const deleteUser = async (req, res) => {
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
+    }
+
+    if (user.email === "ishwar.t@medkart.in") {
+      return res
+        .status(400)
+        .json({ success: false, message: "You cannot delete this user." });
     }
 
     // Proceed to delete the user from the database

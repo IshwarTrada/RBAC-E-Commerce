@@ -320,6 +320,7 @@ const deleteProduct = async (req, res) => {
       },
       data: {
         isdeleted: true, // Mark product as deleted (soft delete)
+        stockQty: 0, // Set stockQty to 0
       },
     });
 
