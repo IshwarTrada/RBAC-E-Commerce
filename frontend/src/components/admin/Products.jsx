@@ -23,6 +23,7 @@ import Modal from "./Modal";
 import AddProduct from "./AddProduct";
 import EditProduct from "./EditProduct";
 import { set } from "react-hook-form";
+import { toast } from "react-toastify";
 
 const apiUrl = "http://localhost:8000/api/v1";
 const Products = () => {
@@ -202,20 +203,13 @@ const Products = () => {
       );
 
       // Display a success toast
-      toast({
-        title: "Success",
-        description: "Product deleted successfully",
-      });
+      toast.success("Product deleted successfully");
 
       // Close the delete modal
       setIsDeleteModalOpen(false);
     } catch (err) {
       // Display an error toast in case of failure
-      toast({
-        title: "Error",
-        description: "Failed to delete product",
-        variant: "destructive",
-      });
+      toast.error(`Product not deleted successfully due to ${err.message}`)
     }
   };
 
@@ -321,8 +315,11 @@ const Products = () => {
                   <TableCell>₹{product.mrp}</TableCell>
                   <TableCell>₹{product.sales_price}</TableCell>
                   <TableCell>
-                    <Badge className={
-                        product.stockQty > 10 ? "bg-green-600 text-white" : "bg-red-600 text-white"
+                    <Badge
+                      className={
+                        product.stockQty > 10
+                          ? "bg-green-600 text-white"
+                          : "bg-red-600 text-white"
                       }
                       variant={
                         product.stockQty > 10 ? "success" : "destructive"

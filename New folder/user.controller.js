@@ -31,7 +31,7 @@ const createUser = async (req, res) => {
     const userExists = await prisma.user.findUnique({
       where: {
         email,
-        isdeleted: false,
+        isdeleted: false, // Check if the user is not deleted,
       },
     });
 
@@ -143,7 +143,7 @@ const loginUser = async (req, res) => {
   const user = await prisma.user.findUnique({
     where: {
       email,
-      isdeleted: false,
+      isdeleted: false, // Check if the user is not deleted
     },
   });
 
@@ -209,7 +209,7 @@ const forgotPassword = async (req, res) => {
     const user = await prisma.user.findUnique({
       where: {
         email,
-        isdeleted: false,
+        isdeleted: false, // Check if the user is not deleted
       },
     });
 
