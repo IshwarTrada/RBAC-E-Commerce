@@ -17,11 +17,13 @@ const searchProduct = async (req, res) => {
               contains: query, // Search in the `name` field
               mode: "insensitive", // Case-insensitive search
             },
+            isdeleted: false, // Only fetch products that are not deleted
           },
           isNumericQuery && {
             ws_code: {
               equals: parseInt(query, 10), // Exact match for ws_code if the query is numeric
             },
+            isdeleted: false, // Only fetch products that are not deleted
           },
         ].filter(Boolean), // Remove any undefined elements in the OR array
       },
@@ -60,7 +62,9 @@ const addProduct = async (req, res) => {
       !mrp ||
       !stockQty
     ) {
-      return res.status(400).json({ message: "Missing required fields" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing required fields" });
     }
 
     // Step 3: Handle images (if applicable)
@@ -92,6 +96,7 @@ const addProduct = async (req, res) => {
     const categoryExists = await prisma.category.findUnique({
       where: {
         name: category,
+        isdeleted: false,
       },
     });
 
@@ -176,6 +181,7 @@ const updateProduct = async (req, res) => {
     const existingProduct = await prisma.product.findUnique({
       where: {
         id: productId,
+        isdeleted: false,
       },
     });
 
@@ -236,6 +242,7 @@ const updateProduct = async (req, res) => {
     const categoryExists = await prisma.category.findFirst({
       where: {
         name: category,
+        isdeleted: false,
       },
     });
 
@@ -250,6 +257,7 @@ const updateProduct = async (req, res) => {
     const updatedProduct = await prisma.product.update({
       where: {
         id: productId,
+        isdeleted: false,
       },
       data: {
         name,
@@ -294,6 +302,7 @@ const deleteProduct = async (req, res) => {
     const product = await prisma.product.findUnique({
       where: {
         ws_code: parseInt(ws_code),
+        isdeleted: false,
       },
     });
 
@@ -304,10 +313,13 @@ const deleteProduct = async (req, res) => {
       });
     }
 
-    // Step 2: Delete related OrderItems
-    await prisma.orderItem.deleteMany({
+    // Step 2: Soft delete the product by updating isdeleted flag
+    await prisma.product.update({
       where: {
-        product_id: product.id,
+        ws_code: parseInt(ws_code),
+      },
+      data: {
+        isdeleted: true, // Mark product as deleted (soft delete)
       },
     });
 
@@ -319,14 +331,7 @@ const deleteProduct = async (req, res) => {
       await Promise.all(deleteImagePromises);
     }
 
-    // Step 4: Delete the product from the database
-    await prisma.product.delete({
-      where: {
-        ws_code: parseInt(ws_code),
-      },
-    });
-
-    // Step 5: Respond with a success message
+    // Step 4: Respond with a success message
     return res.status(200).json({
       success: true,
       message: `Product with ws_code ${ws_code} has been deleted successfully.`,
@@ -349,6 +354,7 @@ const getProductById = async (req, res) => {
     const product = await prisma.product.findUnique({
       where: {
         id: id, // Find the product using the ID
+        isdeleted: false, // Make sure it's not deleted
       },
       include: {
         category: true,
@@ -400,6 +406,9 @@ const getAllProducts = async (req, res) => {
 
     // Step 4: Fetch the paginated products from the database
     const products = await prisma.product.findMany({
+      where: {
+        isdeleted: false, // Only fetch products that are not deleted
+      },
       skip, // Skip the first n records
       take, // Take the next n records
       include: {
